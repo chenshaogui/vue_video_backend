@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mongo="http://www.springframework.org/schema/data/mongo"
+       xsi:schemaLocation="http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	   http://www.springframework.org/schema/beans 
+	   http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	   http://www.springframework.org/schema/data/mongo
+       http://www.springframework.org/schema/data/mongo/spring-mongo.xsd
+       http://www.springframework.org/schema/tx 
+       http://www.springframework.org/schema/tx/spring-tx.xsd"
+       default-init-method="init">
+	
+     <!-- 加载mongodb的属性配置文件 -->  
+    <context:property-placeholder location="classpath:config/mongodb.properties" ignore-unresolvable="true" />  
+     <!--3.服务器连接信息-->
+    <mongo:mongo-client host="${mongo.host}" port="${mongo.port}"></mongo:mongo-client>
+    
+    <!--4.创建mongoTemplate模板-->
+    <bean id="mongoTemplate" class="org.springframework.data.mongodb.core.MongoTemplate">
+        <constructor-arg ref="mongo"/>
+        <!-- 设置使用的数据库 名-->
+        <constructor-arg name="databaseName" value="${mongo.dbname}"/>
+    </bean>
+    
+<!--      <context:property-placeholder location="classpath:config/jdbc.properties" ignore-unresolvable="true"/>
+     配置数据源
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${jdbc.driver}"/>  数据库连接驱动
+        <property name="jdbcUrl" value="${jdbc.url}"/>     数据库地址
+        <property name="user" value="${jdbc.username}"/>   用户名
+        <property name="password" value="${jdbc.password}"/>   密码
+        <property name="maxPoolSize" value="40"/>      最大连接数
+        <property name="minPoolSize" value="1"/>       最小连接数
+        <property name="initialPoolSize" value="10"/>      初始化连接池内的数据库连接
+        <property name="maxIdleTime" value="20"/>  最大空闲时间
+    </bean>
+ 
+     配置session工厂
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="com.localvideo.dev.pojo"/>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">update</prop> hibernate根据实体自动生成数据库表
+                <prop key="hibernate.dialect">${hibernate.dialect}</prop>   指定数据库方言
+                <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>     在控制台显示执行的数据库操作语句
+                <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>     在控制台显示执行的数据哭操作语句（格式）
+            </props>
+        </property>
+    </bean>
+	
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate4.HibernateTemplate">  
+        <property name="sessionFactory" ref="sessionFactory" />  
+    </bean>
+
+	配置事务管理器，使用拦截器声明式事务 
+	<bean id="transactionManager"
+	    class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	    <property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+    <bean id="transactionInterceptor"  
+        class="org.springframework.transaction.interceptor.TransactionInterceptor">  
+        <property name="transactionManager" ref="transactionManager" />  
+        配置事务属性  
+        <property name="transactionAttributes">  
+            <props>  
+            	PROPAGATION_REQUIRED：支持当前事务，如果当前没有事务，则新建一个事务 
+                <prop key="add*">PROPAGATION_REQUIRED</prop>
+                <prop key="del*">PROPAGATION_REQUIRED</prop>
+            </props>  
+        </property>  
+    </bean> -->
+   <!--  <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">  
+        <property name="beanNames">  
+            <list>  
+                <value>*Service</value>
+            </list>  
+        </property>  
+        <property name="interceptorNames">  
+            <list>  
+                <value>transactionInterceptor</value>  
+            </list>  
+        </property>  
+    </bean>   -->
+ 
+</beans>
